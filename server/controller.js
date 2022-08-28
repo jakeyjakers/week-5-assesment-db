@@ -6,7 +6,7 @@ const sequelize = new Sequelize(CONNECTION_STRING, {
     dialect: 'postgres',
     dialectOptions: {
         ssl: {
-            rejectUnauthorized: false,
+            rejectUnauthorized: false
         }
     }
 })
@@ -263,10 +263,10 @@ module.exports = {
     getCities: (req, res) =>{
         sequelize.query(
             `
-            SELECT cities, cities.city_id AS city, rating, countries, countries.country_id AS country, 
+            SELECT cities.city_id, cities.rating, cities.name AS city, countries.country_id, countries.name AS country 
             FROM cities
             JOIN countries
-            WHERE cities.city_id = countries.country_id;
+            ON cities.city_id = countries.country_id;
             `) .then((dbRes) =>{
                 res.status(200).send(dbRes[0])
             })
@@ -275,17 +275,17 @@ module.exports = {
             })
     },
     deleteCity: (req, res) =>{
-        const {cityId} = req.params
+        const {id} = req.params
 
         sequelize.query(
             `
             DELETE 
             FROM cities
-            WHERE city_id = '${cityId}';
+            WHERE city_id = ${id};
             `) .then((dbRes) =>{
                 res.status(200).send(dbRes[0])
             })
-            .cath((err) =>{
+            .catch((err) =>{
                 console.log(err)
             })
     },
